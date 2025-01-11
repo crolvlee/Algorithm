@@ -1,44 +1,57 @@
+# 단방향 그래프!!!
+# a가 b에 의존한다면 -> b가 감염되었을 때 a가 감염됨. a가 감염되었을 떄 b는 감염 안됨
 import sys
 import heapq
 input = sys.stdin.readline
 
-tc = int(input())
-#  n: 컴퓨터 개수 / d : 의존성 개수 / c: 해킹당한 컴퓨터 번호
-#  a가 컴퓨터 b를 의존하며, 컴퓨터 b가 감염되면 s초 후 컴퓨터 a도 감염됨
-def dijkstra(start, infection_times, graph):
+INF = int(1e9)
+T = int(input())    # 테스트케이스의 개수
 
+def dijkstra(start, graph, distance, infected):
     q = []
-    heapq.heappush(q,(0,start))
-    infection_times[start] = 0
-
+    heapq.heappush(q, [0, start])   # [거리, 정점번호]
+    distance[start] = 0
+    infected[start] = True
+    
     while q:
-        time, now =heapq.heappop(q)
-
-        if infection_times[now] < time:
+        now_dist, now_node = heapq.heappop(q)   # 시작점부터 선택점까지의 거리, 선택점
+        
+        if now_dist > distance[now_node]:
             continue
-  
-        for a, s in graph[now]:
-            now_totalTime = time + s
-            if now_totalTime < infection_times[a]:
-                infection_times[a] = now_totalTime
-                heapq.heappush(q,(now_totalTime,a))
+        
+        for neighbor in graph[now_node]:
+            cost = now_dist + neighbor[1]   # (시작점 ~ 선택점 거리) + (선택점 ~ 도착점 거리)
+            
+            if distance[neighbor[0]] > cost:
+                distance[neighbor[0]] = cost
+                infected[neighbor[0]] = True
+                heapq.heappush(q, [cost, neighbor[0]])
 
-
-for t in range(tc):
-    INF = int(1e9)
-    n, d, c = map(int,input().split())
+for _ in range(T):
+    
+    # n: 컴퓨터의 개수
+    # d: 의존성 개수
+    # c: 해킹당한 컴퓨터의 번호
+    n, d, c = map(int, input().split())
     graph = [[] for _ in range(n+1)]
-    infection_times = [INF] * (n+1)
-
-
-    for i in range(d):
-        a, b, s = map(int,input().split())
-        graph[b].append((a,s))
-    dijkstra(c, infection_times, graph)
-
-    cnt,last_time   = 0, 0 # 감염된 컴퓨터 수, 최종 시간
+    
+    for _ in range(d):
+        a, b, s = map(int, input().split())
+        graph[b].append([a, s])     # [노드번호, 거리]
+        
+    distance = [INF for _ in range(n+1)]    # 시작점에서 특정점까지의 거리
+    infected = [False for _ in range(n+1)]  # 감염되어 있는지 여부
+    
+    # c에서 출발하여 한방향 탐색
+    dijkstra(c, graph, distance, infected)
+    
+    # 출력 ================
+    infected_cnt = infected.count(True)     # 총 감염되는 컴퓨터의 수
+    max_distance = 0
+            
     for i in range(1, n+1):
-        if infection_times[i] != INF:
-            cnt +=1
-            last_time = max(last_time,infection_times[i])
-    print(cnt, last_time)
+        if distance[i] > max_distance and infected[i] == True:
+            max_distance = distance[i]
+        
+    
+    print(infected_cnt, max_distance)

@@ -3,28 +3,21 @@ M = int(input())    # M: S의 길이
 S = input()         # S: 주어진 긴 문자열
 
 answer = 0
+i = 0
+O_count = 0
 
-
-for idx, s in enumerate(S):
-    if s == 'O':
-        continue
-    
-    current = 'I'    # 글자 업데이트 될 예정. ex. IOI
-    O_count = 0
-    now_idx = idx + 1
-
-    while now_idx < len(S):
-        if current[-1] == S[now_idx]:
-            break
-        else:
-            current += S[now_idx]
-            if S[now_idx] == 'O':
-                O_count += 1
+while i < (M-1):
+    if S[i:i+3] == 'IOI':
+        O_count += 1
+        i += 2
         
-        now_idx += 1
-        
-        if O_count == N and current[-1] == 'I':
+        if O_count == N:
             answer += 1
-            break
+            O_count -= 1
+    
+    else:
+        i += 1
+        O_count = 0
+    
 
-print(answer)
+print(answer)     

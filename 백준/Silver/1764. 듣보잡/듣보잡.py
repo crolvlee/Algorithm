@@ -1,9 +1,13 @@
+import sys
+input = sys.stdin.readline
+
+# ----------
 N, M = map(int, input().split())    # 듣, 보
 
 # 듣
 person_list = []
 for _ in range(N):
-    person = input()
+    person = input().strip()
     person_list.append(person)
     
 person_list = set(person_list)
@@ -12,7 +16,7 @@ person_list = set(person_list)
 # 보
 result_list = []
 for _ in range(M):
-    person = input()
+    person = input().strip()
     if person in person_list:
         result_list.append(person)
 

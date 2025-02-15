@@ -38,6 +38,7 @@ def BFS(start, visited):
                 q.appendleft([next_num, now_cnt])
                 visited[next_num] = True
                 is_road = True
+                break
         
         # 2. 사다리나 뱀에 해당하지 않다면, 주사위
         if is_road == False:

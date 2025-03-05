@@ -1,0 +1,24 @@
+# MEMBER_PROFILE 테이블
+# REST_REVIEW 테이블
+
+
+SELECT 
+    MEMBER_PROFILE.MEMBER_NAME, 
+    REST_REVIEW.REVIEW_TEXT, 
+    DATE_FORMAT(REST_REVIEW.REVIEW_DATE, '%Y-%m-%d') AS REVIEW_DATE
+FROM REST_REVIEW, MEMBER_PROFILE
+WHERE MEMBER_PROFILE.MEMBER_ID = REST_REVIEW.MEMBER_ID
+    AND MEMBER_PROFILE.MEMBER_ID IN (
+            SELECT MEMBER_ID
+            FROM REST_REVIEW
+            GROUP BY MEMBER_ID
+            HAVING COUNT(*) = (
+                    SELECT MAX(REVIEW_CNT)
+                    FROM    (
+                                SELECT MEMBER_ID, COUNT(*) AS REVIEW_CNT
+                                FROM REST_REVIEW
+                                GROUP BY MEMBER_ID
+                            ) AS MAX_CNT
+                )
+        )
+ORDER BY REST_REVIEW.REVIEW_DATE ASC, REST_REVIEW.REVIEW_TEXT ASC

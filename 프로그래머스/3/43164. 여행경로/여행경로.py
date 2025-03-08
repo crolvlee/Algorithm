@@ -1,5 +1,3 @@
-import heapq
-
 def DFS(airport_order, n, tickets_dict):
     if len(airport_order) == (n+1):
         return airport_order
